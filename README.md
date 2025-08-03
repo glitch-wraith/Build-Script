@@ -36,6 +36,7 @@ Before using this script, ensure you have the following dependencies installed:
 
     - `CONFIG_DEVICE`: The device codename (e.g., `lancelot`). If left empty, the script will prompt for it.
     - `CONFIG_TARGET`: The build target (e.g., `bacon`).
+    - `CONFIG_SETUP_COMMAND`: The setup command (e.g., `lunch lineage_lancelot-bp2a-user`, `brunch lancelot`). If left empty, the script will run `breakfast $CONFIG_DEVICE`
     - `CONFIG_OFFICIAL_FLAG`: The flag to export for an official build.
     - `CONFIG_CHATID`: Your Telegram channel/group chat ID.
     - `CONFIG_BOT_TOKEN`: Your Telegram bot token.

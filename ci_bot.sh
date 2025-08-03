@@ -293,11 +293,22 @@ build_start_time=$(date -u +%s)
 echo -e "$BOLD_GREEN\nSetting up build environment...$RESET"
 source build/envsetup.sh
 
-echo -e "$BOLD_GREEN\nRunning breakfast for \"$DEVICE\"...$RESET"
-breakfast "$DEVICE"
+# Check for a custom setup command from config.env, otherwise use breakfast.
+if [[ -n "$CONFIG_SETUP_COMMAND" ]]; then
+    echo -e "$BOLD_GREEN\nRunning custom setup command: \"$CONFIG_SETUP_COMMAND\"...$RESET"
+    $CONFIG_SETUP_COMMAND
+    SETUP_EXIT_CODE=$?
+    SETUP_FAILED_MESSAGE="Failed at running custom setup command: <code>$CONFIG_SETUP_COMMAND</code>."
+else
+    echo -e "$BOLD_GREEN\nRunning breakfast for \"$DEVICE\"...$RESET"
+    breakfast "$DEVICE"
+    SETUP_EXIT_CODE=$?
+    SETUP_FAILED_MESSAGE="Failed at running breakfast for <code>$DEVICE</code>."
+fi
 
-if [ $? -ne 0 ]; then
-    build_failed_message=$(generate_telegram_message "🔴" "ROM compilation failed" "" "Failed at running breakfast for $DEVICE.")
+# Check if the setup command was successful
+if [ $SETUP_EXIT_CODE -ne 0 ]; then
+    build_failed_message=$(generate_telegram_message "🔴" "ROM compilation failed" "" "$SETUP_FAILED_MESSAGE")
     edit_message "$build_failed_message" "$CONFIG_CHATID" "$build_message_id"
     send_sticker "$STICKER_URL" "$CONFIG_CHATID"
     exit 1
